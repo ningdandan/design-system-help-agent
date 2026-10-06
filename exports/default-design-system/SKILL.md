@@ -19,6 +19,8 @@ Copy from the originating repo:
 | File | Purpose |
 |------|---------|
 | `tokens.css` | CSS variables (colors, gradients, shadows, type, radii) |
+| `tailwind-theme.css` | Tailwind v4 `@theme` block for utility classes |
+| `designTokens.json` | Same tokens as JSON for JS/TS |
 | `style-guide.html` | Visual reference + component CSS to copy |
 | `SKILL.md` | This skill |
 
