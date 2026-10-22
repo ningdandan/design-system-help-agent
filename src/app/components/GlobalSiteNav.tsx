@@ -16,6 +16,17 @@ export function GlobalSiteNav({
       <nav className="flex items-center gap-[2px] rounded-full bg-[#d8d8e0] p-[3px]">
         <button
           type="button"
+          onClick={() => onChange("components")}
+          className={`rounded-full px-[14px] py-[6px] font-['Plus_Jakarta_Sans',sans-serif] text-[13px] transition-colors ${
+            section === "components"
+              ? "bg-white text-[#1a1a2e] font-semibold shadow-sm"
+              : "text-[#6b7280] font-medium hover:text-[#1a1a2e]"
+          }`}
+        >
+          Design system
+        </button>
+        <button
+          type="button"
           onClick={() => onChange("demo")}
           className={`rounded-full px-[14px] py-[6px] font-['Plus_Jakarta_Sans',sans-serif] text-[13px] transition-colors ${
             section === "demo"
@@ -24,17 +35,6 @@ export function GlobalSiteNav({
           }`}
         >
           Demo
-        </button>
-        <button
-          type="button"
-          onClick={() => onChange("components")}
-          className={`rounded-full px-[14px] py-[6px] font-['Plus_Jakarta_Sans',sans-serif] text-[13px] transition-colors ${
-            section === "components"
-              ? "bg-white text-[#1a1a2e] font-semibold shadow-sm"
-              : "text-[#6b7280] font-medium hover:text-[#1a1a2e]"
-          }`}
-        >
-          Components
         </button>
       </nav>
       {trailing ? <div className="min-w-0">{trailing}</div> : <span />}

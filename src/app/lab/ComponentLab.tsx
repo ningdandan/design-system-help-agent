@@ -136,7 +136,7 @@ const COMPONENTS: ComponentEntry[] = [
 
 function MiniPromptPreview() {
   return (
-    <div className="pt-[36px] px-[8px] pointer-events-none">
+    <div className="w-full max-w-[280px] pointer-events-none">
       <div
         className="rounded-full px-[4px] py-[4px]"
         style={{
@@ -157,7 +157,7 @@ function MiniPromptPreview() {
 
 function MiniSummaryPreview() {
   return (
-    <div className="pointer-events-none rounded-[12px] bg-white border border-[#e8e8ed] p-[12px] shadow-sm">
+    <div className="w-full max-w-[260px] pointer-events-none rounded-[12px] bg-white border border-[#e8e8ed] p-[12px] shadow-sm">
       <div className="flex items-center gap-[6px] mb-[8px]">
         <Sparkles className="size-[11px] text-[#001769]" />
         <span className="font-['Plus_Jakarta_Sans',sans-serif] text-[10px] font-semibold text-[#6b7280]">
@@ -177,7 +177,7 @@ function MiniSummaryPreview() {
 
 function MiniDynamicPreview() {
   return (
-    <div className="scale-[0.72] origin-top-left w-[138%] pointer-events-none">
+    <div className="w-full max-w-[240px] scale-[0.88] pointer-events-none">
       <DynamicCard
         accent="success"
         title="Password reset complete"
@@ -207,7 +207,7 @@ function MiniChipsPreview() {
     { id: "3", label: "Schedule callback" },
   ];
   return (
-    <div className="pointer-events-none pt-[8px]">
+    <div className="w-full max-w-[280px] pointer-events-none flex justify-center">
       <RecommendationChips chips={chips} />
     </div>
   );
@@ -215,7 +215,7 @@ function MiniChipsPreview() {
 
 function MiniNudgePreview() {
   return (
-    <div className="pointer-events-none pt-[4px]">
+    <div className="w-full max-w-[280px] pointer-events-none flex justify-center">
       <NudgePills pills={SAMPLE_NUDGE_PILLS.slice(0, 3)} onSelect={() => {}} compact />
     </div>
   );
@@ -223,7 +223,7 @@ function MiniNudgePreview() {
 
 function MiniSuggestionsPreview() {
   return (
-    <div className="pointer-events-none rounded-[14px] bg-white border border-[#e8e8ed] overflow-hidden shadow-sm">
+    <div className="w-full max-w-[250px] pointer-events-none rounded-[14px] bg-white border border-[#e8e8ed] overflow-hidden shadow-sm">
       <div className="h-[36px] px-[12px] flex items-center gap-[8px] border-b border-[#f3f4f6]">
         <Search className="size-[12px] text-[#9ca3af]" />
         <span className="font-['Plus_Jakarta_Sans',sans-serif] text-[11px] text-[#9ca3af]">
@@ -253,7 +253,7 @@ function MiniSuggestionsPreview() {
 
 function MiniCategoryPreview() {
   return (
-    <div className="pt-[48px] px-[8px] pointer-events-none flex flex-wrap gap-[8px] justify-center">
+    <div className="w-full max-w-[280px] pointer-events-none flex flex-wrap gap-[8px] justify-center">
       {["Getting Started", "Billing & Subscriptions"].map((label) => (
         <span
           key={label}
@@ -374,14 +374,15 @@ export function ComponentLab() {
                     onClick={() => openComponent(c.id)}
                     className="group text-left rounded-[22px] border border-white/80 bg-white/80 backdrop-blur-[8px] overflow-hidden shadow-[0_8px_32px_rgba(15,23,42,0.05)] hover:bg-white hover:border-white hover:shadow-[0_20px_50px_rgba(15,23,42,0.09)] transition-all duration-300"
                   >
-                    <div className="h-[176px] border-b border-[#eef0f5] px-[20px] pt-[22px] overflow-hidden relative"
+                    <div
+                      className="h-[176px] border-b border-[#eef0f5] px-[20px] overflow-hidden relative flex items-center justify-center"
                       style={{
                         background:
                           "linear-gradient(165deg, #f8f9fc 0%, #eef2f9 55%, #f5f7fb 100%)",
                       }}
                     >
                       <ComponentPreviewThumb id={c.id} />
-                      <div className="absolute inset-x-0 bottom-0 h-[52px] bg-gradient-to-t from-[#f5f7fb] to-transparent pointer-events-none" />
+                      <div className="absolute inset-x-0 bottom-0 h-[40px] bg-gradient-to-t from-[#f5f7fb] to-transparent pointer-events-none" />
                     </div>
                     <div className="p-[22px]">
                       <div className="flex items-center justify-between gap-[8px] mb-[12px]">

@@ -186,7 +186,7 @@ export function ComponentLabLanding({
                   "linear-gradient(120deg, #001769 0%, #101C86 45%, #312e81 100%)",
               }}
             >
-              component design system
+              design system
             </span>
           </motion.h1>
 

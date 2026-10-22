@@ -8,7 +8,7 @@ import { ThemeProvider } from "@/app/ThemeContext";
 import { DesignTokensProvider } from "@/app/DesignTokensContext";
 
 function AppInner() {
-  const [siteSection, setSiteSection] = useState<"demo" | "components">("demo");
+  const [siteSection, setSiteSection] = useState<"demo" | "components">("components");
 
   if (siteSection === "components") {
     return (
