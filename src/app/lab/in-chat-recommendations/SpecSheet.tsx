@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, ReactNode } from "react";
+import { motion } from "motion/react";
 import {
   PhoneForwarded,
   Gift,
@@ -11,6 +12,11 @@ import {
   Sparkles,
 } from "lucide-react";
 import { SpecPage } from "../shared/SpecPage";
+import {
+  InUsePreview,
+  InUseScene,
+  InUseSpotlight,
+} from "../shared/InUsePreview";
 
 // ─── Animation loop hook ──────────────────────────────────────────────────────
 
@@ -554,12 +560,114 @@ const SPEC_SECTIONS: {
 
 // ─── Design spec page ─────────────────────────────────────────────────────────
 
+function InChatInUse() {
+  // 0 chips rest  1 hover 0  2 hover 1  3 hover 2  4 fill input  5 settle
+  const step = useAnimLoop(true, 9000, [0, 1400, 2800, 4200, 5600, 7400]);
+  const hoverIdx = step === 1 ? 0 : step === 2 ? 1 : step === 3 ? 2 : -1;
+  const filled = step >= 4;
+  const chips = [
+    { id: "1", label: "Release hold on #TRK-88432", icon: PhoneForwarded },
+    { id: "2", label: "Apply goodwill credit", icon: Gift },
+    { id: "3", label: "Call Marcus Fri", icon: Calendar },
+    { id: "4", label: "Email express options", icon: FileText },
+  ];
+
+  return (
+    <InUsePreview
+      url="crm.acme.com/conversations/4821"
+      label="Live showcase · Agent reply"
+      minH={380}
+      bg="#F4F6F9"
+    >
+      <div className="px-10 pt-8 pb-10 flex flex-col gap-4 min-h-[380px]">
+        <InUseScene className="flex-1 w-full space-y-3 pointer-events-none">
+          <p className="text-[13px] font-semibold" style={{ color: "#111827" }}>
+            Marcus Webb
+          </p>
+          <div className="flex justify-end">
+            <div
+              className="px-3.5 py-2 rounded-2xl rounded-tr-sm text-[12px]"
+              style={{ background: "#1D4ED8", color: "#fff", maxWidth: "70%" }}
+            >
+              Package is stuck in transit — can we release the hold?
+            </div>
+          </div>
+          <div className="flex justify-start">
+            <div
+              className="px-3.5 py-2 rounded-2xl rounded-tl-sm text-[12px]"
+              style={{
+                background: "#fff",
+                border: "1px solid #E5E7EB",
+                color: "#374151",
+                maxWidth: "75%",
+              }}
+            >
+              I see #TRK-88432 on a verification hold. I can release it or offer goodwill options.
+            </div>
+          </div>
+        </InUseScene>
+
+        <InUseScene className="w-full pointer-events-none">
+          <div className="flex items-center gap-2 bg-white rounded-full px-4 py-3 shadow-sm">
+            <span className="text-[#9CA3AF] text-lg leading-none shrink-0">+</span>
+            <span
+              className="flex-1 text-[13px] truncate"
+              style={{ color: filled ? "#111827" : "#9CA3AF" }}
+            >
+              {filled ? chips[0].label : "Type a reply…"}
+            </span>
+            <Mic size={14} className="text-[#9CA3AF] shrink-0" />
+          </div>
+        </InUseScene>
+
+        <InUseSpotlight className="w-full">
+          <motion.div
+            animate={{ opacity: filled ? 0.4 : 1 }}
+            transition={{ duration: 0.35 }}
+          >
+            <div className="space-y-[8px]">
+              <div className="flex items-center gap-[6px]">
+                <Sparkles className="size-[10px] text-[#001769]" />
+                <span className="font-['Plus_Jakarta_Sans',sans-serif] text-[10px] font-semibold uppercase tracking-[0.08em] text-[#001769]">
+                  AI Assist
+                </span>
+              </div>
+              <div className="flex gap-[8px] overflow-hidden">
+                {chips.map((chip, i) => {
+                  const Icon = chip.icon;
+                  const hot = hoverIdx === i;
+                  return (
+                    <motion.div
+                      key={chip.id}
+                      animate={{
+                        scale: hot ? 1.04 : 1,
+                        backgroundColor: hot ? "#EFF6FF" : "#ffffff",
+                        borderColor: hot ? "rgba(37,99,235,0.35)" : "#e4e4ea",
+                        color: hot ? "#2563EB" : "#374151",
+                      }}
+                      className="shrink-0 inline-flex items-center gap-[6px] rounded-full border px-[14px] py-[8px] font-['Plus_Jakarta_Sans',sans-serif] text-[13px] font-medium"
+                    >
+                      <Icon className="size-[13px] opacity-60" />
+                      {chip.label}
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+          </motion.div>
+        </InUseSpotlight>
+      </div>
+    </InUsePreview>
+  );
+}
+
 export default function SpecSheet(_props?: { onViewDemo?: () => void }) {
   return (
     <SpecPage
       monoLabel="Design Specs · In-chat recommendations"
       title="Suggestion chips"
       subtitle="The AI reads every message in real time and surfaces a short set of ready-to-send actions below the reply bar. One tap, and the action is in the thread — personalized to this conversation, this customer, this moment."
+      inUse={<InChatInUse />}
       sections={SPEC_SECTIONS}
     />
   );

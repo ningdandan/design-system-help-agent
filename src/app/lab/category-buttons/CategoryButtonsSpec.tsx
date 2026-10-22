@@ -8,6 +8,11 @@ import {
   useAnimLoop,
   type SpecSection,
 } from "../shared/SpecPage";
+import {
+  InUsePreview,
+  InUseScene,
+  InUseSpotlight,
+} from "../shared/InUsePreview";
 
 const CATS = [
   { label: "Getting Started", icon: Lightbulb, items: ["Set up workspace", "Invite teammates", "Connect integrations"] },
@@ -310,12 +315,60 @@ const SECTIONS: SpecSection[] = [
   },
 ];
 
+function CategoryButtonsInUse() {
+  // 0 enter  1 rest  2 hover  3 open menu  4 highlight item
+  const step = useAnimLoop(true, 7200, [0, 900, 2200, 3400, 5000]);
+  const openIndex = step >= 3 ? 1 : null;
+  const hoverIndex = step === 2 ? 1 : step >= 3 ? 1 : null;
+
+  return (
+    <InUsePreview
+      url="help.acme.com"
+      label="Live showcase · Help home"
+      minH={340}
+      bg="linear-gradient(180deg, #EEF0F8 0%, #F5F5F3 100%)"
+    >
+      <div className="px-10 pt-14 pb-16 flex flex-col items-center gap-6">
+        <InUseScene className="w-full flex flex-col items-center gap-3 pointer-events-none">
+          <SpecStencil w={180} h={12} opacity={0.28} />
+          <SpecStencil w={260} h={8} opacity={0.14} />
+          <div
+            className="w-full max-w-[480px] h-12 rounded-full mt-1"
+            style={{
+              backgroundImage: "linear-gradient(135deg, #c7d2fe 0%, #ddd6fe 45%, #fbcfe8 100%)",
+              padding: 4,
+              boxShadow: "0 8px 24px rgba(6,106,254,0.12)",
+            }}
+          >
+            <div className="h-full rounded-full bg-white" />
+          </div>
+        </InUseScene>
+
+        <InUseSpotlight className="w-full max-w-[720px] min-h-[120px]">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: step >= 1 ? 1 : 0.35, y: step >= 1 ? 0 : 8 }}
+            transition={{ duration: 0.45 }}
+          >
+            <PillRow
+              openIndex={openIndex}
+              hoverIndex={hoverIndex}
+              dimOthers={step >= 3}
+            />
+          </motion.div>
+        </InUseSpotlight>
+      </div>
+    </InUsePreview>
+  );
+}
+
 export function CategoryButtonsSpec() {
   return (
     <SpecPage
       monoLabel="Design Specs · Category buttons"
       title="Category buttons"
       subtitle="Frosted topic pills under the home prompt — stagger in, open a short menu, and hand the chosen intent to search."
+      inUse={<CategoryButtonsInUse />}
       sections={SECTIONS}
     />
   );

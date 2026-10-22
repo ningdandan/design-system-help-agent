@@ -211,7 +211,7 @@ export function NudgePillsPlayground() {
           Component · app CSS
         </p>
         <h1 className="font-['Plus_Jakarta_Sans',sans-serif] text-[22px] font-bold text-[#1a1a2e] tracking-[-0.02em]">
-          Nudge pills (HA)
+          Nudge pills
         </h1>
         <p className="mt-[6px] font-['Plus_Jakarta_Sans',sans-serif] text-[13px] leading-[20px] text-[#6b7280]">
           Topic pills with optional dropdowns. Spec + full prototype in Specs / Demo tabs.

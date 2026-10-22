@@ -8,6 +8,11 @@ import {
   useAnimLoop,
   type SpecSection,
 } from "../shared/SpecPage";
+import {
+  InUsePreview,
+  InUseScene,
+  InUseSpotlight,
+} from "../shared/InUsePreview";
 
 function CitationChip({
   n,
@@ -326,12 +331,82 @@ const SECTIONS: SpecSection[] = [
   },
 ];
 
+function SearchSummaryInUse() {
+  // 0 empty  1 card in  2 cite  3 expand  4 ask+chip
+  const step = useAnimLoop(true, 9000, [0, 800, 2600, 4400, 6600]);
+
+  return (
+    <InUsePreview
+      url="help.acme.com/search?q=payout+hold"
+      label="Live showcase · Search results"
+      minH={400}
+    >
+      <div className="px-10 pt-10 pb-12 flex justify-center">
+        <div className="w-full max-w-[640px] space-y-4">
+          <InUseScene className="w-full space-y-3 pointer-events-none">
+            <div
+              className="w-full h-11 rounded-full bg-white px-4 flex items-center gap-2"
+              style={{ border: "1px solid #E5E7EB" }}
+            >
+              <SpecStencil w={14} h={14} opacity={0.2} />
+              <SpecStencil w={220} h={8} opacity={0.28} />
+            </div>
+            <div className="flex gap-2 pt-1">
+              <SpecStencil w={90} h={8} opacity={0.14} />
+              <SpecStencil w={40} h={8} opacity={0.08} />
+            </div>
+          </InUseScene>
+
+          <InUseSpotlight className="w-full relative">
+            <AnimatePresence>
+              {step >= 1 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <SummaryCard
+                    expanded={step >= 3}
+                    citeHot={step === 2 ? 1 : null}
+                    showFeedback={step >= 1}
+                    showAsk={step >= 4}
+                    chipHot={step >= 4 ? 0 : -1}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+            <AnimatePresence>
+              {step === 2 && <CitationPopover title="Payout holds guide" />}
+            </AnimatePresence>
+          </InUseSpotlight>
+
+          <InUseScene className="w-full space-y-2.5 pointer-events-none pt-1">
+            {[88, 72, 64].map((w, i) => (
+              <div
+                key={i}
+                className="w-full rounded-lg bg-white px-4 py-3"
+                style={{ border: "1px solid #ECECF1" }}
+              >
+                <SpecStencil w={`${w}%`} h={8} opacity={0.22} />
+                <div className="mt-2">
+                  <SpecStencil w="55%" h={6} opacity={0.12} />
+                </div>
+              </div>
+            ))}
+          </InUseScene>
+        </div>
+      </div>
+    </InUsePreview>
+  );
+}
+
 export function SearchSummarySpec() {
   return (
     <SpecPage
       monoLabel="Design Specs · Search summary"
       title="Smart summary interaction system"
       subtitle="Four patterns for answering on the results page — highlight the fact, cite the source, expand with care, and invite the next step."
+      inUse={<SearchSummaryInUse />}
       sections={SECTIONS}
     />
   );

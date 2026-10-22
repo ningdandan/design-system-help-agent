@@ -1,6 +1,18 @@
 import { useState, useEffect, useRef, ReactNode } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { CheckCircle2 } from "lucide-react";
 import { SpecPage } from "../shared/SpecPage";
+import {
+  InUsePreview,
+  InUseScene,
+  InUseSpotlight,
+} from "../shared/InUsePreview";
+import {
+  DynamicCard,
+  CardActions,
+  CardPrimaryButton,
+  CardSecondaryButton,
+} from "./DynamicCard";
 
 // === Shared helpers ===========================================================
 
@@ -36,14 +48,14 @@ function Stencil({ w, h = 7, opacity = 0.18 }: { w: string | number; h?: number;
 
 function Chrome({ url }: { url: string }) {
   return (
-    <div className="px-3 py-2 flex items-center gap-2" style={{ background: "#1A1A18", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+    <div className="px-3 py-2 flex items-center gap-2" style={{ background: "#f3f4f6", borderBottom: "1px solid #e5e7eb" }}>
       <div className="flex gap-1">
         {["#FF5F57", "#FFBD2E", "#28C840"].map((c) => (
           <div key={c} className="w-2 h-2 rounded-full" style={{ background: c }} />
         ))}
       </div>
-      <div className="flex-1 max-w-[200px] mx-auto rounded px-2 py-0.5" style={{ background: "rgba(0,0,0,0.25)" }}>
-        <span className="block truncate text-[9px]" style={{ color: "#555553" }}>{url}</span>
+      <div className="flex-1 max-w-[200px] mx-auto rounded px-2 py-0.5" style={{ background: "#ffffff", border: "1px solid #e5e7eb" }}>
+        <span className="block truncate text-[9px]" style={{ color: "#6b7280" }}>{url}</span>
       </div>
     </div>
   );
@@ -51,7 +63,7 @@ function Chrome({ url }: { url: string }) {
 
 function Shell({ url, children }: { url: string; children: ReactNode }) {
   return (
-    <div className="rounded-xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.07)", boxShadow: "0 8px 40px rgba(0,0,0,0.5)", background: "#141412" }}>
+    <div className="rounded-xl overflow-hidden" style={{ border: "1px solid #e5e7eb", boxShadow: "0 12px 40px rgba(15,23,42,0.08)", background: "#ffffff" }}>
       <Chrome url={url} />
       {children}
     </div>
@@ -683,12 +695,111 @@ const SECTIONS = [
 
 // === Page =====================================================================
 
+function DynamicCardInUse() {
+  // 0 user msg  1 typing  2 card enter  3 settle
+  const step = useAnimLoop(true, 7000, [0, 900, 2400, 4200]);
+
+  return (
+    <InUsePreview url="agent-ui.internal/securbot" label="Live showcase · Agent chat" minH={360}>
+      <div className="px-10 pt-10 pb-12 flex flex-col gap-4 max-w-[720px] mx-auto w-full">
+        <InUseScene className="w-full flex flex-col gap-3 pointer-events-none">
+          <div className="flex justify-end">
+            <div
+              className="px-4 py-2.5 rounded-2xl rounded-tr-sm text-[13px] font-medium"
+              style={{ background: "#1D4ED8", color: "#fff", maxWidth: "70%" }}
+            >
+              Reset my Salesforce password
+            </div>
+          </div>
+          <div className="flex items-start gap-2.5">
+            <div
+              className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[9px] font-bold"
+              style={{ background: "#1D4ED8", color: "#fff", marginTop: 2 }}
+            >
+              S
+            </div>
+            <AnimatePresence mode="wait">
+              {step === 1 && (
+                <motion.div
+                  key="dots"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="inline-flex items-center gap-1 px-3 py-2 rounded-2xl rounded-tl-sm"
+                  style={{ background: "#fff", border: "1px solid rgba(0,0,0,0.06)" }}
+                >
+                  {[0, 0.18, 0.36].map((d, i) => (
+                    <div
+                      key={i}
+                      className="w-1.5 h-1.5 rounded-full bg-[#9CA3AF]"
+                      style={{ animation: `w1dot 1.1s ease-in-out ${d}s infinite` }}
+                    />
+                  ))}
+                </motion.div>
+              )}
+              {step !== 1 && (
+                <motion.div
+                  key="reply"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: step >= 2 ? 0.55 : 1 }}
+                  className="px-3 py-2 rounded-2xl rounded-tl-sm text-[12px]"
+                  style={{
+                    background: "#fff",
+                    border: "1px solid rgba(0,0,0,0.06)",
+                    color: "#374151",
+                    maxWidth: "75%",
+                  }}
+                >
+                  I can reset that for you — confirm below when you’re ready.
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </InUseScene>
+
+        <InUseSpotlight className="w-full pl-9 min-h-[160px]">
+          <AnimatePresence>
+            {step >= 2 && (
+              <motion.div
+                initial={{ opacity: 0, y: 16, scale: 0.94 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <DynamicCard
+                  accent="success"
+                  title="Password reset complete"
+                  badge={{ label: "Complete", tone: "success" }}
+                  footer={
+                    <CardActions
+                      secondary={<CardSecondaryButton>Undo</CardSecondaryButton>}
+                      primary={<CardPrimaryButton>View audit log</CardPrimaryButton>}
+                    />
+                  }
+                >
+                  <div className="flex items-center gap-[8px] rounded-[10px] bg-green-50 border border-green-100 px-[12px] py-[8px]">
+                    <CheckCircle2 className="size-[14px] text-[#096] shrink-0" />
+                    <span className="font-['Plus_Jakarta_Sans',sans-serif] text-[13px] text-[#096]">
+                      Password reset successfully
+                    </span>
+                  </div>
+                </DynamicCard>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </InUseSpotlight>
+        <style>{`@keyframes w1dot{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}`}</style>
+      </div>
+    </InUsePreview>
+  );
+}
+
 export function DesignSpec() {
   return (
     <SpecPage
       monoLabel="Design Specs · Dynamic cards"
       title="DynamicCard interaction system"
       subtitle="Six interaction patterns that define how DynamicCard behaves — from the moment a task begins to the moment it resolves."
+      inUse={<DynamicCardInUse />}
       sections={SECTIONS}
     />
   );

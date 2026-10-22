@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, type ReactNode } from "react";
+import { ComponentSwitcher, useComponentLabNav } from "./ComponentLabNav";
 
 /** Looping step driver used by animated spec widgets. */
 export function useAnimLoop(inView: boolean, totalMs: number, timestamps: number[]) {
@@ -36,14 +37,14 @@ export function useAnimLoop(inView: boolean, totalMs: number, timestamps: number
 export function SpecStencil({
   w,
   h = 7,
-  opacity = 0.18,
+  opacity = 0.22,
 }: {
   w: string | number;
   h?: number;
   opacity?: number;
 }) {
   return (
-    <div style={{ width: w, height: h, background: "#888", borderRadius: 3, opacity }} />
+    <div style={{ width: w, height: h, background: "#9ca3af", borderRadius: 3, opacity }} />
   );
 }
 
@@ -51,7 +52,7 @@ export function SpecChrome({ url }: { url: string }) {
   return (
     <div
       className="px-3 py-2 flex items-center gap-2"
-      style={{ background: "#1A1A18", borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+      style={{ background: "#f3f4f6", borderBottom: "1px solid #e5e7eb" }}
     >
       <div className="flex gap-1">
         {["#FF5F57", "#FFBD2E", "#28C840"].map((c) => (
@@ -60,9 +61,9 @@ export function SpecChrome({ url }: { url: string }) {
       </div>
       <div
         className="flex-1 max-w-[220px] mx-auto rounded px-2 py-0.5"
-        style={{ background: "rgba(0,0,0,0.25)" }}
+        style={{ background: "#ffffff", border: "1px solid #e5e7eb" }}
       >
-        <span className="block truncate text-[9px]" style={{ color: "#555553" }}>
+        <span className="block truncate text-[9px]" style={{ color: "#6b7280" }}>
           {url}
         </span>
       </div>
@@ -75,9 +76,9 @@ export function SpecShell({ url, children }: { url: string; children: ReactNode 
     <div
       className="rounded-xl overflow-hidden"
       style={{
-        border: "1px solid rgba(255,255,255,0.07)",
-        boxShadow: "0 8px 40px rgba(0,0,0,0.5)",
-        background: "#141412",
+        border: "1px solid #e5e7eb",
+        boxShadow: "0 12px 40px rgba(15,23,42,0.08)",
+        background: "#ffffff",
       }}
     >
       <SpecChrome url={url} />
@@ -114,11 +115,14 @@ export function SpecPage({
   monoLabel,
   title,
   subtitle,
+  inUse,
   sections,
 }: {
   monoLabel: string;
   title: string;
   subtitle: string;
+  /** Optional “component in use” hero rendered under the title block */
+  inUse?: ReactNode;
   sections: SpecSection[];
 }) {
   const [activeIdx, setActiveIdx] = useState(-1);
@@ -149,21 +153,31 @@ export function SpecPage({
     return () => container.removeEventListener("scroll", update);
   }, []);
 
+  const labNav = useComponentLabNav();
+
   return (
-    <div ref={containerRef} className="h-full min-h-0 overflow-y-auto" style={{ background: "#0E0E0D" }}>
-      <div className="max-w-[1080px] mx-auto px-10 pt-14 pb-10">
-        <p
-          className="text-[10px] uppercase tracking-[0.18em] mb-4 font-mono"
-          style={{ color: "#2E2E2C" }}
-        >
-          {monoLabel}
-        </p>
-        <h2 className="text-[36px] font-bold mb-4 leading-tight" style={{ color: "#F0F0EE" }}>
+    <div
+      ref={containerRef}
+      className="h-full min-h-0 overflow-y-auto font-['Plus_Jakarta_Sans',sans-serif]"
+      style={{ background: "#f7f7f9" }}
+    >
+      <div className="max-w-[1080px] mx-auto px-10 pt-14 pb-10 flex flex-col items-center text-center">
+        {labNav ? (
+          <div className="mb-[18px]">
+            <ComponentSwitcher />
+          </div>
+        ) : (
+          <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#9ca3af] mb-[10px]">
+            {monoLabel}
+          </p>
+        )}
+        <h2 className="text-[28px] sm:text-[32px] font-semibold leading-[1.12] tracking-[-0.03em] text-[#0b1228] mb-[14px] max-w-[720px]">
           {title}
         </h2>
-        <p className="text-[14px] leading-[1.85] max-w-[520px]" style={{ color: "#484846" }}>
+        <p className="text-[15px] leading-[24px] text-[#5b6475] max-w-[520px]">
           {subtitle}
         </p>
+        {inUse && <div className="w-full text-left mt-2">{inUse}</div>}
       </div>
 
       <div className="max-w-[1080px] mx-auto px-10 pb-32">
@@ -177,27 +191,27 @@ export function SpecPage({
               }}
               className="py-24 grid grid-cols-2 gap-20 items-center"
               style={{
-                borderTop: "1px solid rgba(255,255,255,0.05)",
-                opacity: activeIdx === -1 || active ? 1 : 0.1,
-                filter: active ? "none" : "blur(0.4px)",
+                borderTop: "1px solid rgba(0,0,0,0.06)",
+                opacity: activeIdx === -1 || active ? 1 : 0.28,
+                filter: active ? "none" : "blur(0.3px)",
                 transition: "opacity 0.5s ease, filter 0.5s ease",
               }}
             >
               <div>
                 <div className="flex items-center gap-3 mb-5">
                   <span
-                    className="text-[11px] font-mono transition-colors duration-400"
-                    style={{ color: active ? "#2563EB" : "#272725" }}
+                    className="text-[12px] font-semibold tabular-nums transition-colors duration-400"
+                    style={{ color: active ? "#001769" : "#c4c4c8" }}
                   >
                     {s.num}
                   </span>
                   <span
-                    className="text-[8px] uppercase tracking-widest px-2.5 py-1 rounded-full transition-all duration-400"
+                    className="text-[10px] font-semibold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full transition-all duration-400"
                     style={{
-                      background: active ? "rgba(37,99,235,0.12)" : "rgba(255,255,255,0.04)",
-                      color: active ? "#6B94FF" : "#363634",
+                      background: active ? "rgba(0,23,105,0.08)" : "#f0f0f4",
+                      color: active ? "#001769" : "#9ca3af",
                       border: `1px solid ${
-                        active ? "rgba(37,99,235,0.24)" : "rgba(255,255,255,0.06)"
+                        active ? "rgba(0,23,105,0.16)" : "#e4e4ea"
                       }`,
                     }}
                   >
@@ -205,14 +219,14 @@ export function SpecPage({
                   </span>
                 </div>
                 <h3
-                  className="text-[26px] font-bold mb-4 leading-tight transition-colors duration-400"
-                  style={{ color: active ? "#ECECEA" : "#242422" }}
+                  className="text-[22px] font-bold leading-[1.15] tracking-[-0.025em] mb-4 transition-colors duration-400"
+                  style={{ color: active ? "#1a1a2e" : "#b0b0b8" }}
                 >
                   {s.title}
                 </h3>
                 <p
-                  className="text-[13px] leading-[1.9] mb-6 transition-colors duration-400"
-                  style={{ color: active ? "#5A5A58" : "#222220" }}
+                  className="text-[14px] leading-[22px] mb-6 transition-colors duration-400"
+                  style={{ color: active ? "#5b6475" : "#c0c0c6" }}
                 >
                   {s.desc}
                 </p>
@@ -220,12 +234,12 @@ export function SpecPage({
                   {s.bullets.map((b) => (
                     <li key={b} className="flex items-start gap-3">
                       <div
-                        className="w-1 h-1 rounded-full flex-shrink-0 mt-[7px] transition-all duration-400"
-                        style={{ background: active ? "#2563EB" : "#2A2A28" }}
+                        className="w-1 h-1 rounded-full flex-shrink-0 mt-[8px] transition-all duration-400"
+                        style={{ background: active ? "#001769" : "#d1d5db" }}
                       />
                       <span
-                        className="text-[12px] leading-relaxed transition-colors duration-400"
-                        style={{ color: active ? "#4A4A48" : "#202020" }}
+                        className="text-[13px] leading-[20px] transition-colors duration-400"
+                        style={{ color: active ? "#374151" : "#c0c0c6" }}
                       >
                         {b}
                       </span>

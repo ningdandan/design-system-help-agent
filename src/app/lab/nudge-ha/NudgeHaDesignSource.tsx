@@ -2,6 +2,11 @@ import { useState, useEffect, useRef, type ReactNode } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { SpecPage } from "../shared/SpecPage";
 import {
+  InUsePreview,
+  InUseScene,
+  InUseSpotlight,
+} from "../shared/InUsePreview";
+import {
   ChevronRight,
   ChevronLeft,
   ChevronDown,
@@ -1373,13 +1378,14 @@ function BrowserFrame({ url, children }: { url: string; children: React.ReactNod
     <div
       className="rounded-xl overflow-hidden"
       style={{
-        border: "1px solid rgba(255,255,255,0.07)",
-        boxShadow: "0 0 0 1px rgba(0,0,0,0.5), 0 24px 80px rgba(0,0,0,0.55)",
+        border: "1px solid #e5e7eb",
+        boxShadow: "0 12px 40px rgba(15,23,42,0.08)",
+        background: "#ffffff",
       }}
     >
       <div
         className="px-4 py-2.5 flex items-center gap-3"
-        style={{ background: "#2A2A28", borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+        style={{ background: "#f3f4f6", borderBottom: "1px solid #e5e7eb" }}
       >
         <div className="flex gap-1.5 shrink-0">
           <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57]" />
@@ -1388,10 +1394,10 @@ function BrowserFrame({ url, children }: { url: string; children: React.ReactNod
         </div>
         <div
           className="flex-1 rounded-md px-2.5 py-1 flex items-center gap-1.5 max-w-sm mx-auto"
-          style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.07)" }}
+          style={{ background: "#ffffff", border: "1px solid #e5e7eb" }}
         >
-          <Globe size={10} className="text-[#5A5A58] shrink-0" />
-          <span className="text-[11px] text-[#5A5A58] truncate" style={{ fontFamily: "'DM Mono', monospace" }}>
+          <Globe size={10} className="text-[#6b7280] shrink-0" />
+          <span className="text-[11px] text-[#6b7280] truncate" style={{ fontFamily: "'DM Mono', monospace" }}>
             {url}
           </span>
         </div>
@@ -1413,12 +1419,12 @@ function StepNav({ mode, step, setStep }: { mode: ModeId; step: number; setStep:
             <button
               onClick={() => setStep(i + 1)}
               className="text-[14px] font-semibold transition-colors px-1"
-              style={{ color: step === i + 1 ? "#F0F0EE" : "#3E3E3C" }}
+              style={{ color: step === i + 1 ? "#1a1a2e" : "#9ca3af" }}
             >
               {s.label}
             </button>
             {i < steps.length - 1 && (
-              <ChevronRight size={14} className="mx-1.5" style={{ color: "#2A2A28" }} />
+              <ChevronRight size={14} className="mx-1.5" style={{ color: "#d1d5db" }} />
             )}
           </div>
         ))}
@@ -1428,17 +1434,17 @@ function StepNav({ mode, step, setStep }: { mode: ModeId; step: number; setStep:
           onClick={() => setStep(Math.max(1, step - 1))}
           disabled={step === 1}
           className="w-8 h-8 rounded-lg flex items-center justify-center transition-opacity disabled:opacity-20"
-          style={{ background: "rgba(255,255,255,0.06)" }}
+          style={{ background: "#ececf1" }}
         >
-          <ChevronLeft size={16} style={{ color: "#F0F0EE" }} />
+          <ChevronLeft size={16} style={{ color: "#1a1a2e" }} />
         </button>
         <button
           onClick={() => setStep(Math.min(steps.length, step + 1))}
           disabled={step === steps.length}
           className="w-8 h-8 rounded-lg flex items-center justify-center transition-opacity disabled:opacity-20"
-          style={{ background: "rgba(255,255,255,0.06)" }}
+          style={{ background: "#ececf1" }}
         >
-          <ChevronRight size={16} style={{ color: "#F0F0EE" }} />
+          <ChevronRight size={16} style={{ color: "#1a1a2e" }} />
         </button>
       </div>
     </div>
@@ -2026,12 +2032,99 @@ const SPEC_SECTIONS: {
   },
 ];
 
+function NudgeHaInUse() {
+  // 0 article  1 pills in  2 hover chip  3 settle
+  const step = useAnimLoop(true, 7000, [0, 900, 2800, 4800]);
+  const chips = [
+    "I didn't receive the reset email",
+    "My reset link expired",
+    "Reset via mobile app",
+    "Ask anything else",
+  ];
+
+  return (
+    <InUsePreview
+      url="help.acme.com/articles/password-reset"
+      label="Live showcase · Knowledge article"
+      minH={360}
+    >
+      <div className="relative px-8 pt-8 pb-10 min-h-[360px]">
+        <InUseScene className="pointer-events-none max-w-[460px]">
+          <div className="flex items-center gap-1.5 mb-3">
+            <span className="text-[11px]" style={{ color: "#9A9A98" }}>
+              Help Center
+            </span>
+            <ChevronRight size={11} className="text-[#C8C8C6]" />
+            <span className="text-[11px] font-medium" style={{ color: "#111110" }}>
+              Password Reset
+            </span>
+          </div>
+          <h3
+            className="text-[20px] font-bold leading-tight mb-1"
+            style={{ color: "#111110" }}
+          >
+            Resetting Your Password
+          </h3>
+          <p className="text-[11px] mb-5" style={{ color: "#9A9A98" }}>
+            Updated Jan 12, 2025 · 5 min read
+          </p>
+          <div className="space-y-2 mb-5">
+            <Stencil w="100%" h={7} opacity={0.16} />
+            <Stencil w="94%" h={7} opacity={0.13} />
+            <Stencil w="88%" h={7} opacity={0.11} />
+            <Stencil w="70%" h={7} opacity={0.09} />
+          </div>
+          <div className="space-y-2">
+            <Stencil w="100%" h={7} opacity={0.14} />
+            <Stencil w="86%" h={7} opacity={0.11} />
+          </div>
+        </InUseScene>
+
+        <InUseSpotlight className="mt-5 max-w-[520px]">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{
+              opacity: step >= 1 ? 1 : 0,
+              y: step >= 1 ? 0 : 8,
+            }}
+            transition={{ duration: 0.4 }}
+            className="flex flex-wrap gap-2"
+          >
+            {chips.map((chip, i) => {
+              const hot = step === 2 && i === 3;
+              return (
+                <motion.span
+                  key={chip}
+                  animate={{
+                    scale: hot ? 1.04 : 1,
+                    background: hot ? "#E0EAFF" : "#F0F4FF",
+                    borderColor: hot
+                      ? "rgba(37,99,235,0.35)"
+                      : "rgba(37,99,235,0.15)",
+                    boxShadow: hot ? "0 0 0 3px rgba(37,99,235,0.08)" : "none",
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] whitespace-nowrap"
+                  style={{ color: "#2563EB", fontWeight: 400 }}
+                >
+                  <Sparkles size={11} className="opacity-60 shrink-0" />
+                  {chip}
+                </motion.span>
+              );
+            })}
+          </motion.div>
+        </InUseSpotlight>
+      </div>
+    </InUsePreview>
+  );
+}
+
 export function NudgeHaSpec() {
   return (
     <SpecPage
-      monoLabel="Design Specs · Nudge · HA"
+      monoLabel="Design Specs · Nudge pills"
       title="The blue nudge pill"
       subtitle="One component, three placements. Each adapts its position and behavior to the user's current context across the help experience."
+      inUse={<NudgeHaInUse />}
       sections={SPEC_SECTIONS}
     />
   );
@@ -2051,30 +2144,27 @@ export function NudgeHaPrototype() {
   return (
     <div
       className="h-full min-h-0 overflow-y-auto"
-      style={{ background: "#0E0E0D", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+      style={{ background: "#f7f7f9", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
     >
       <div className="max-w-[1080px] mx-auto px-10 pt-10 pb-6">
-        <p
-          className="text-[10px] uppercase tracking-[0.18em] mb-4 font-mono"
-          style={{ color: "#2E2E2C" }}
-        >
-          Interactive demo · Nudge · HA
+        <p className="font-['Plus_Jakarta_Sans',sans-serif] text-[12px] font-semibold uppercase tracking-[0.08em] text-[#9ca3af] mb-[8px]">
+          Interactive demo · Nudge pills
         </p>
-        <h2 className="text-[28px] font-bold mb-3 leading-tight" style={{ color: "#F0F0EE" }}>
+        <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-[28px] font-bold leading-[1.1] tracking-[-0.03em] text-[#1a1a2e] mb-[12px]">
           Experience walkthrough
         </h2>
-        <p className="text-[13px] leading-[1.7] max-w-[520px] mb-6" style={{ color: "#484846" }}>
+        <p className="font-['Plus_Jakarta_Sans',sans-serif] text-[15px] leading-[24px] text-[#5b6475] max-w-[520px] mb-6">
           Step through homepage, article, and chat placements. Switch usecases below — this control stays in the page body so the Components chrome stays unified.
         </p>
 
         <div className="mb-8">
           <div className="flex flex-wrap items-center gap-2 mb-2">
-            <span className="text-[10px] uppercase tracking-[0.1em] mr-1" style={{ color: "#3E3E3C" }}>
+            <span className="text-[10px] uppercase tracking-[0.1em] mr-1" style={{ color: "#9ca3af" }}>
               Usecase
             </span>
             <div
               className="flex items-center rounded-xl p-1 gap-0.5"
-              style={{ background: "rgba(255,255,255,0.05)" }}
+              style={{ background: "#ececf1" }}
             >
               {([1, 2, 3] as ModeId[]).map((m) => (
                 <button
@@ -2084,8 +2174,8 @@ export function NudgeHaPrototype() {
                   className="px-4 py-1.5 rounded-lg text-[12px] font-semibold transition-all"
                   style={
                     mode === m
-                      ? { background: "rgba(255,255,255,0.1)", color: "#F0F0EE" }
-                      : { color: "#3E3E3C" }
+                      ? { background: "#1a1a2e", color: "#ffffff" }
+                      : { color: "#6b7280" }
                   }
                 >
                   Usecase {m}
@@ -2093,7 +2183,7 @@ export function NudgeHaPrototype() {
               ))}
             </div>
           </div>
-          <p className="text-[12px]" style={{ color: "#5A5A58" }}>
+          <p className="text-[12px]" style={{ color: "#6b7280" }}>
             {MODE_SUBTITLES[mode]}
           </p>
         </div>

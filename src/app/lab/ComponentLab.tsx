@@ -1,6 +1,5 @@
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import {
-  ArrowLeft,
   ArrowRight,
   CheckCircle2,
   CreditCard,
@@ -11,6 +10,11 @@ import {
   Search,
   Sparkles,
 } from "lucide-react";
+import {
+  ComponentDetailFooter,
+  ComponentLabNavProvider,
+  ComponentSwitcher,
+} from "./shared/ComponentLabNav";
 import { DesignSpec } from "./dynamic-card/DesignSpec";
 import { DynamicCardGallery } from "./dynamic-card/DynamicCardGallery";
 import SpecSheet from "./in-chat-recommendations/SpecSheet";
@@ -34,6 +38,8 @@ import { PromptBarSpec } from "./prompt-bar/PromptBarSpec";
 import { CategoryButtonsSpec } from "./category-buttons/CategoryButtonsSpec";
 import { SearchSuggestionsSpec } from "./search-suggestions/SearchSuggestionsSpec";
 import { SearchSummarySpec } from "./search-summary/SearchSummarySpec";
+import { ComponentLabLanding } from "./ComponentLabLanding";
+import { DemoExperience } from "../components/DemoExperience";
 
 type ComponentId =
   | "prompt-bar"
@@ -118,7 +124,7 @@ const COMPONENTS: ComponentEntry[] = [
   },
   {
     id: "nudge-ha",
-    name: "Nudge pills · HA",
+    name: "Nudge pills",
     tag: "Help · Discovery",
     summary:
       "Blue topic pills with optional dropdowns — home, article, and chat placements for the help agent.",
@@ -278,144 +284,190 @@ export function ComponentLab() {
   const [tab, setTab] = useState<DetailTab>("specs");
 
   const entry = COMPONENTS.find((c) => c.id === active) ?? null;
-  const onSpecs = Boolean(entry && tab === "specs");
+  const activeIndex = entry ? COMPONENTS.findIndex((c) => c.id === entry.id) : -1;
 
   const openComponent = (id: ComponentId) => {
     setActive(id);
     setTab("specs");
   };
 
+  const labNavValue = useMemo(() => {
+    if (!entry || activeIndex < 0) return null;
+    return {
+      components: COMPONENTS.map((c) => ({ id: c.id, name: c.name, tag: c.tag })),
+      activeId: entry.id,
+      onSelect: (id: string) => openComponent(id as ComponentId),
+      onLibrary: () => setActive(null),
+      prev: activeIndex > 0 ? COMPONENTS[activeIndex - 1] : null,
+      next:
+        activeIndex < COMPONENTS.length - 1 ? COMPONENTS[activeIndex + 1] : null,
+    };
+  }, [entry, activeIndex]);
+
   return (
-    <div
-      className={`h-full min-h-0 w-full overflow-hidden flex flex-col ${
-        onSpecs ? "bg-[#0E0E0D]" : "bg-[#f7f7f9]"
-      }`}
-    >
+    <div className="h-full min-h-0 w-full overflow-hidden flex flex-col bg-[#f7f7f9]">
       <style>{`@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}`}</style>
 
       {!entry && (
-        <main className="flex-1 min-h-0 overflow-y-auto max-w-[1120px] w-full mx-auto px-[24px] pt-[48px] pb-[80px]">
-          <p className="font-['Plus_Jakarta_Sans',sans-serif] text-[12px] font-semibold uppercase tracking-[0.08em] text-[#9ca3af] mb-[12px]">
-            Design guidelines
-          </p>
-          <h1 className="font-['Plus_Jakarta_Sans',sans-serif] text-[44px] font-bold leading-[1.05] tracking-[-0.035em] text-[#1a1a2e] mb-[12px]">
-            Components
-          </h1>
-          <p className="font-['Plus_Jakarta_Sans',sans-serif] text-[16px] leading-[24px] text-[#6b7280] max-w-[540px] mb-[40px]">
-            Building blocks for the search-enhanced and conversational experiences.
-            Open a card to read its design spec or try the interactive demo.
-          </p>
+        <main className="flex-1 min-h-0 overflow-y-auto">
+          <ComponentLabLanding
+            componentCount={COMPONENTS.length}
+            onBrowse={() => {
+              document
+                .getElementById("component-library-grid")
+                ?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+          />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[20px]">
-            {COMPONENTS.map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => openComponent(c.id)}
-                className="group text-left rounded-[20px] border border-[#e4e4ea] bg-white overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:border-[#c8c8d0] hover:shadow-[0_12px_40px_rgba(26,26,46,0.08)] transition-all"
-              >
-                <div className="h-[168px] bg-[#f0f0f4] border-b border-[#ececf1] px-[18px] pt-[18px] overflow-hidden relative">
-                  <ComponentPreviewThumb id={c.id} />
-                  <div className="absolute inset-x-0 bottom-0 h-[48px] bg-gradient-to-t from-[#f0f0f4] to-transparent pointer-events-none" />
-                </div>
-                <div className="p-[18px]">
-                  <div className="flex items-center justify-between gap-[8px] mb-[8px]">
-                    <span className="inline-flex items-center gap-[6px] font-['Plus_Jakarta_Sans',sans-serif] text-[11px] font-semibold uppercase tracking-[0.06em] text-[#9ca3af]">
-                      <span className="text-[#1a1a2e]">{c.icon}</span>
-                      {c.tag}
-                    </span>
-                    <span className="rounded-full bg-[#f0f0f4] px-[8px] py-[2px] font-['Plus_Jakarta_Sans',sans-serif] text-[10px] font-semibold text-[#6b7280]">
-                      {c.status}
-                    </span>
-                  </div>
-                  <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-[18px] font-bold tracking-[-0.02em] text-[#1a1a2e] mb-[6px] group-hover:underline underline-offset-2">
-                    {c.name}
-                  </h2>
-                  <p className="font-['Plus_Jakarta_Sans',sans-serif] text-[13px] leading-[19px] text-[#6b7280] mb-[14px]">
-                    {c.summary}
-                  </p>
-                  <span className="inline-flex items-center gap-[6px] font-['Plus_Jakarta_Sans',sans-serif] text-[12px] font-semibold text-[#1a1a2e]">
-                    View specs
-                    <ArrowRight className="size-[12px] transition-transform group-hover:translate-x-[2px]" />
-                  </span>
-                </div>
-              </button>
-            ))}
-          </div>
-        </main>
-      )}
-
-      {entry && (
-        <main className="flex-1 min-h-0 flex flex-col">
-          <div
-            className={`shrink-0 h-[48px] px-[20px] flex items-center justify-between gap-[12px] ${
-              onSpecs
-                ? "bg-[#0E0E0D] border-b border-white/[0.06]"
-                : "bg-[#f7f7f9] border-b border-[#e4e4ea]"
-            }`}
+          <section
+            className="relative w-full py-[96px] sm:py-[120px]"
+            style={{
+              background:
+                "linear-gradient(180deg, #12121f 0%, #16162a 48%, #12121f 100%)",
+            }}
           >
-            <button
-              type="button"
-              onClick={() => setActive(null)}
-              className={`inline-flex items-center gap-[6px] font-['Plus_Jakarta_Sans',sans-serif] text-[12px] font-medium transition-colors ${
-                onSpecs
-                  ? "text-[#6b6b68] hover:text-[#F0F0EE]"
-                  : "text-[#6b7280] hover:text-[#1a1a2e]"
-              }`}
-            >
-              <ArrowLeft className="size-[12px]" />
-              All components
-            </button>
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background:
+                  "radial-gradient(ellipse 55% 45% at 50% 18%, rgba(37,56,140,0.28) 0%, transparent 70%)",
+              }}
+            />
+            <div className="relative max-w-[1080px] w-full mx-auto px-[24px]">
+              <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-[26px] sm:text-[30px] font-semibold leading-[1.15] tracking-[-0.03em] text-white/95 text-center mb-[40px] sm:mb-[48px]">
+                Live experience
+              </h2>
+              <DemoExperience variant="embed" />
+            </div>
+          </section>
 
-            {entry.tabs.length > 1 && (
-              <div
-                className={`flex items-center gap-[3px] rounded-[10px] p-[3px] ${
-                  onSpecs ? "bg-white/[0.06]" : "bg-[#ececf1]"
-                }`}
-              >
-                {entry.tabs.map((t) => (
+          <section id="component-library-grid" className="relative w-full overflow-hidden">
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background:
+                  "radial-gradient(ellipse 80% 50% at 50% -5%, rgba(214,239,252,0.9) 0%, transparent 55%), radial-gradient(ellipse 45% 40% at 8% 70%, rgba(232,245,240,0.75) 0%, transparent 50%), radial-gradient(ellipse 50% 45% at 92% 55%, rgba(216,228,255,0.7) 0%, transparent 52%), linear-gradient(180deg, #f4f6fb 0%, #eef1f8 40%, #f7f7f9 100%)",
+              }}
+            />
+            <div
+              className="absolute inset-0 pointer-events-none opacity-[0.22]"
+              style={{
+                backgroundImage:
+                  "linear-gradient(rgba(26,26,46,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(26,26,46,0.035) 1px, transparent 1px)",
+                backgroundSize: "56px 56px",
+                maskImage: "linear-gradient(180deg, black 0%, transparent 78%)",
+              }}
+            />
+
+            <div className="relative max-w-[1080px] w-full mx-auto px-[24px] pt-[96px] sm:pt-[120px] pb-[100px] sm:pb-[120px]">
+              <div className="mb-[40px] sm:mb-[48px] text-center">
+                <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-[26px] sm:text-[30px] font-semibold leading-[1.15] tracking-[-0.03em] text-[#0b1228]">
+                  Component library
+                </h2>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[24px] sm:gap-[28px]">
+                {COMPONENTS.map((c) => (
                   <button
-                    key={t}
+                    key={c.id}
                     type="button"
-                    onClick={() => setTab(t)}
-                    className={`rounded-[8px] px-[12px] py-[5px] font-['Plus_Jakarta_Sans',sans-serif] text-[11px] font-semibold transition-colors ${
-                      tab === t
-                        ? onSpecs
-                          ? "bg-white/[0.12] text-[#F0F0EE]"
-                          : "bg-[#1a1a2e] text-white"
-                        : onSpecs
-                          ? "text-[#5a5a58] hover:text-[#c8c8c4]"
-                          : "text-[#6b7280] hover:text-[#1a1a2e]"
-                    }`}
+                    onClick={() => openComponent(c.id)}
+                    className="group text-left rounded-[22px] border border-white/80 bg-white/80 backdrop-blur-[8px] overflow-hidden shadow-[0_8px_32px_rgba(15,23,42,0.05)] hover:bg-white hover:border-white hover:shadow-[0_20px_50px_rgba(15,23,42,0.09)] transition-all duration-300"
                   >
-                    {t === "specs" ? "Specs" : "Demo"}
+                    <div className="h-[176px] border-b border-[#eef0f5] px-[20px] pt-[22px] overflow-hidden relative"
+                      style={{
+                        background:
+                          "linear-gradient(165deg, #f8f9fc 0%, #eef2f9 55%, #f5f7fb 100%)",
+                      }}
+                    >
+                      <ComponentPreviewThumb id={c.id} />
+                      <div className="absolute inset-x-0 bottom-0 h-[52px] bg-gradient-to-t from-[#f5f7fb] to-transparent pointer-events-none" />
+                    </div>
+                    <div className="p-[22px]">
+                      <div className="flex items-center justify-between gap-[8px] mb-[12px]">
+                        <span className="inline-flex items-center gap-[6px] font-['Plus_Jakarta_Sans',sans-serif] text-[11px] font-medium uppercase tracking-[0.08em] text-[#9ca3af]">
+                          <span className="text-[#1a1a2e]/70">{c.icon}</span>
+                          {c.tag}
+                        </span>
+                        <span className="rounded-full bg-[#f0f2f7]/90 px-[9px] py-[3px] font-['Plus_Jakarta_Sans',sans-serif] text-[10px] font-medium text-[#7b8494]">
+                          {c.status}
+                        </span>
+                      </div>
+                      <h3 className="font-['Plus_Jakarta_Sans',sans-serif] text-[17px] font-semibold tracking-[-0.02em] text-[#0b1228] mb-[8px] group-hover:text-[#001769] transition-colors">
+                        {c.name}
+                      </h3>
+                      <p className="font-['Plus_Jakarta_Sans',sans-serif] text-[13px] leading-[20px] text-[#6b7280] mb-[18px]">
+                        {c.summary}
+                      </p>
+                      <span className="inline-flex items-center gap-[6px] font-['Plus_Jakarta_Sans',sans-serif] text-[12px] font-medium text-[#1a1a2e]/75 group-hover:text-[#001769] transition-colors">
+                        View specs
+                        <ArrowRight className="size-[12px] transition-transform group-hover:translate-x-[2px]" />
+                      </span>
+                    </div>
                   </button>
                 ))}
               </div>
-            )}
-          </div>
-
-          <div className="flex-1 min-h-0 overflow-hidden">
-            {entry.id === "prompt-bar" && tab === "specs" && <PromptBarSpec />}
-            {entry.id === "category-buttons" && tab === "specs" && <CategoryButtonsSpec />}
-            {entry.id === "search-suggestions" && tab === "specs" && (
-              <SearchSuggestionsSpec />
-            )}
-            {entry.id === "search-summary" && tab === "specs" && <SearchSummarySpec />}
-            {entry.id === "dynamic-card" && tab === "specs" && <DesignSpec />}
-            {entry.id === "dynamic-card" && tab === "demo" && <DynamicCardGallery />}
-
-            {entry.id === "in-chat" && tab === "specs" && (
-              <SpecSheet onViewDemo={() => setTab("demo")} />
-            )}
-            {entry.id === "in-chat" && tab === "demo" && (
-              <ChatDemo onBack={() => setTab("specs")} />
-            )}
-
-            {entry.id === "nudge-ha" && tab === "specs" && <NudgeHaSpec />}
-            {entry.id === "nudge-ha" && tab === "demo" && <NudgeHaPrototype />}
-          </div>
+            </div>
+          </section>
         </main>
+      )}
+
+      {entry && labNavValue && (
+        <ComponentLabNavProvider value={labNavValue}>
+          <main className="flex-1 min-h-0 flex flex-col bg-[#f7f7f9]">
+            {entry.tabs.length > 1 && (
+              <div className="shrink-0 flex justify-center pt-[14px] pb-[2px]">
+                <div className="flex items-center gap-[3px] rounded-full p-[3px] bg-[#ececf1]/90 border border-[#e4e4ea]">
+                  {entry.tabs.map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => setTab(t)}
+                      className={`rounded-full px-[14px] py-[6px] font-['Plus_Jakarta_Sans',sans-serif] text-[11px] font-semibold transition-colors ${
+                        tab === t
+                          ? "bg-[#1a1a2e] text-white shadow-sm"
+                          : "text-[#6b7280] hover:text-[#1a1a2e]"
+                      }`}
+                    >
+                      {t === "specs" ? "Specs" : "Demo"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
+              {tab === "demo" ? (
+                <>
+                  <div className="shrink-0 flex justify-center pt-[18px] pb-[8px]">
+                    <ComponentSwitcher />
+                  </div>
+                  <div className="flex-1 min-h-0 overflow-hidden">
+                    {entry.id === "dynamic-card" && <DynamicCardGallery />}
+                    {entry.id === "in-chat" && (
+                      <ChatDemo onBack={() => setTab("specs")} />
+                    )}
+                    {entry.id === "nudge-ha" && <NudgeHaPrototype />}
+                  </div>
+                </>
+              ) : (
+                <div className="flex-1 min-h-0 overflow-hidden">
+                  {entry.id === "prompt-bar" && <PromptBarSpec />}
+                  {entry.id === "category-buttons" && <CategoryButtonsSpec />}
+                  {entry.id === "search-suggestions" && <SearchSuggestionsSpec />}
+                  {entry.id === "search-summary" && <SearchSummarySpec />}
+                  {entry.id === "dynamic-card" && <DesignSpec />}
+                  {entry.id === "in-chat" && (
+                    <SpecSheet onViewDemo={() => setTab("demo")} />
+                  )}
+                  {entry.id === "nudge-ha" && <NudgeHaSpec />}
+                </div>
+              )}
+            </div>
+
+            <ComponentDetailFooter />
+          </main>
+        </ComponentLabNavProvider>
       )}
     </div>
   );

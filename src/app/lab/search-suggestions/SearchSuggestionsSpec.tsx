@@ -9,6 +9,11 @@ import {
   useAnimLoop,
   type SpecSection,
 } from "../shared/SpecPage";
+import {
+  InUsePreview,
+  InUseScene,
+  InUseSpotlight,
+} from "../shared/InUsePreview";
 
 const GRADIENT =
   "linear-gradient(135deg, #c7d2fe 0%, #ddd6fe 45%, #fbcfe8 100%)";
@@ -436,12 +441,86 @@ const SECTIONS: SpecSection[] = [
   },
 ];
 
+function SearchSuggestionsInUse() {
+  // 0 idle pill  1 expand  2 highlight past  3 type filter  4 highlight match
+  const step = useAnimLoop(true, 8200, [0, 1200, 2800, 4400, 6200]);
+  const open = step >= 1;
+  const query = step >= 3 ? "login" : "";
+  const highlight = step === 2 ? 1 : step === 4 ? 0 : -1;
+
+  return (
+    <InUsePreview url="help.acme.com" label="Live showcase · Focused prompt" minH={380}>
+      <div className="px-10 pt-12 pb-12 flex flex-col items-center gap-5">
+        <InUseScene className="w-full flex flex-col items-center gap-3 pointer-events-none mb-1">
+          <SpecStencil w={160} h={11} opacity={0.22} />
+          <SpecStencil w={220} h={7} opacity={0.12} />
+        </InUseScene>
+
+        <InUseSpotlight className="w-full max-w-[520px]">
+          <motion.div
+            layout
+            className="mx-auto w-full overflow-hidden"
+            animate={{
+              borderRadius: open ? 18 : 999,
+              boxShadow: open
+                ? "0 8px 28px rgba(0,23,105,0.10)"
+                : "0 10px 32px rgba(6,106,254,0.14)",
+            }}
+            style={{
+              padding: open ? 4 : "4px 8px 4px 4px",
+              backgroundImage: open ? "none" : GRADIENT,
+              backgroundColor: open ? "#fff" : "transparent",
+            }}
+          >
+            <div
+              className="flex items-center gap-2 px-3"
+              style={{
+                background: "#fff",
+                borderRadius: open ? 14 : 999,
+                minHeight: 48,
+              }}
+            >
+              <Search size={15} style={{ color: "#9CA3AF", flexShrink: 0 }} />
+              <span
+                className="flex-1 text-[14px] truncate"
+                style={{ color: query ? "#111827" : "#9CA3AF" }}
+              >
+                {query || "Ask anything about your account…"}
+              </span>
+              {query ? (
+                <div
+                  className="size-7 rounded-full flex items-center justify-center"
+                  style={{ background: "#001769" }}
+                >
+                  <Send size={11} color="#fff" />
+                </div>
+              ) : (
+                <Mic size={15} style={{ color: "#9CA3AF" }} />
+              )}
+            </div>
+            <AnimatePresence>
+              {open && (
+                <SuggestionPanel
+                  groups={SEARCH_ENHANCED_GROUPS}
+                  highlight={highlight}
+                  query={query}
+                />
+              )}
+            </AnimatePresence>
+          </motion.div>
+        </InUseSpotlight>
+      </div>
+    </InUsePreview>
+  );
+}
+
 export function SearchSuggestionsSpec() {
   return (
     <SpecPage
       monoLabel="Design Specs · Search bar suggestions"
       title="Search bar suggestions"
       subtitle="The grouped list that opens under the prompt — past searches, objects, and FAQs that filter as you type and submit on select."
+      inUse={<SearchSuggestionsInUse />}
       sections={SECTIONS}
     />
   );
